@@ -3,7 +3,8 @@ class KFXMapListLoader extends DefaultMapListLoader;
 //------------------------------------------------------------------------------------------------
 function LoadMapList(xVotingHandler VotingHandler)
 {
-	local int p, i;
+	local int p, i, j;
+	local bool inPrefixList;
 	local array<string> PrefixList;
 	local class<GameInfo> GameClass;
 	local string A,B;
@@ -46,6 +47,23 @@ function LoadMapList(xVotingHandler VotingHandler)
 			for(i=0; i < VotingHandler.GameConfig.Length; i++)
 			{
 				A = VotingHandler.GameConfig[i].Prefix;
+
+				// If we've already added all maps with a given prefix,
+				// don't process that list a second time
+				inPrefixList = false;
+				p = Split(MapNamePrefixes, ",", PrefixList);
+				if (p > 0) {
+					for (j=0; j < PrefixList.Length; j++)
+					{
+						if (A == PrefixList[j]) {
+							inPrefixList = true;
+							break;
+						}
+					}
+				}
+				if (inPrefixList)
+					continue;
+				
 				Divide(A,"|",A,B);
 				if( i>0 )
 					A = ","$A;
